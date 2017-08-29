@@ -10,6 +10,7 @@ import java.awt.Color;
 import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import net.proteanit.sql.DbUtils;
 
 public class Editar_Clientes extends javax.swing.JInternalFrame {
@@ -26,7 +27,7 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
 
         ResultSet resultado;
 
-        sql.append("SELECT * FROM tbl_cliente_juridico WHERE nome_cliente_J LIKE ?");
+        sql.append("SELECT id_cliente_J as Cód, nome_cliente_J as Nome, cnpj as CNPJ, telefone as Fixo, celular as Celular, email as Email, endereco as Endereço, num_end as Nº, bairro as Bairro, cidade as Cidade, estado as UF, data_cad_J as 'Dt Cadastro', categoria as Categoria FROM tbl_cliente_juridico WHERE nome_cliente_J LIKE ? ORDER BY nome_cliente_J");
 
         try {
 
@@ -74,12 +75,16 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
 
         cliente.setId_cliente(Long.parseLong(txt_cod_edit.getText()));
 
-        bll.excluirClienteDAO(cliente);
+        int resposta = JOptionPane.showConfirmDialog(null, "Deseja excluir esse cliente?\nTodos os dados do cliente seram perdidos.", "Alerta", JOptionPane.YES_NO_OPTION);
 
-        JOptionPane.showMessageDialog(null, "Excluido com sucesso!");
-        limparCampo();
-        limparRadio();
-        pesquisarClienteJuridico();
+        if (resposta == JOptionPane.YES_OPTION) {
+
+            bll.excluirClienteDAO(cliente);
+
+            JOptionPane.showMessageDialog(null, "Excluido com sucesso!");
+            limparCampo();
+            pesquisarClienteJuridico();
+        }
     }
 
     // Método para atualizar clientes
@@ -99,19 +104,19 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
         cliente.setEstado(cb_uf_edit.getSelectedItem().toString());
         cliente.setId_cliente(Long.parseLong(txt_cod_edit.getText()));
 
-        if (txt_nome_edit.getText().equals("") || txt_cnpj.getText().equals("   .   .   /    -  ") || txt_cel_edit.getText().equals("(  )      -    ")) {
+        if (txt_nome_edit.getText().equals("") || txt_cel_edit.getText().equals("") || txt_cnpj.getText().trim().length() <= 14) {
 
             JOptionPane.showMessageDialog(null, "Os campos: Nome, CNPJ, Celular devem ser preenchidos!", "Alerta", JOptionPane.WARNING_MESSAGE);
             txt_nome_edit.setBackground(Color.cyan);
             txt_cnpj.setBackground(Color.cyan);
             txt_cel_edit.setBackground(Color.cyan);
+
         } else {
 
             bll.editarClienteDAO(cliente);
 
             JOptionPane.showMessageDialog(null, "Atualizado com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             limparCampo();
-            limparRadio();
             pesquisarClienteJuridico();
         }
 
@@ -143,6 +148,13 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
         return campos;
     }
 
+    private void limparTabela() {
+        DefaultTableModel tbl = (DefaultTableModel) tbl_clientes.getModel();
+        while (tbl.getRowCount() > 0) {
+            tbl.removeRow(0);
+        }
+    }
+
     /* Fim dos métodos do Cliente Juridico*/
  /*-------------------------------------------------------------------------*/
  /* Inicio dos métodos do Cliente Fisico*/
@@ -153,7 +165,7 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
 
         ResultSet resultado;
 
-        sql.append("SELECT * FROM tbl_cliente_fisico WHERE nome_cliente LIKE ?");
+        sql.append("SELECT id_cliente_F as Cód, nome_cliente as Nome, cpf as CPF, telefone as Fixo, celular as Celular, email as Email, endereco as Endereço, num_end as Nº, bairro as Bairro, cidade as Cidade, estado as UF, data_cad_F as 'Dt Cadastro', categoria as Categoria FROM tbl_cliente_fisico WHERE nome_cliente LIKE ? ORDER BY nome_cliente");
 
         try {
 
@@ -179,13 +191,17 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
 
         cliente.setId_cliente_F(Long.parseLong(txt_cod_edit.getText()));
 
-        bll.excluirClienteFisicoDAO(cliente);
+        int resposta = JOptionPane.showConfirmDialog(null, "Deseja excluir esse cliente?\nTodos os dados do cliente seram pedidos.", "Alerta", JOptionPane.YES_NO_OPTION);
 
-        JOptionPane.showMessageDialog(null, "Cliente excluido com sucesso!", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        if (resposta == JOptionPane.YES_OPTION) {
 
-        limparCampo();
-        limparRadio();
-        pesquisarClienteFisico();
+            bll.excluirClienteFisicoDAO(cliente);
+
+            JOptionPane.showMessageDialog(null, "Cliente excluido com sucesso!", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+
+            limparCampo();
+            pesquisarClienteFisico();
+        }
     }
 
     // Método para editar cliente
@@ -205,7 +221,7 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
         cliente.setEstado(cb_uf_edit.getSelectedItem().toString());
         cliente.setId_cliente_F(Long.parseLong(txt_cod_edit.getText()));
 
-        if (txt_nome_edit.getText().equals("") /*|| txt_cpf_edit.getText().equals("   .   .   /    -  ")*/ || txt_cel_edit.getText().equals("(  )      -    ")) {
+        if (txt_nome_edit.getText().equals("") || txt_cpf_edit.getText().trim().length() < 12 || txt_cel_edit.getText().equals("(  )      -    ")) {
 
             JOptionPane.showMessageDialog(null, "Os campos: Nome, CPF, Celular devem ser preenchidos!", "Alerta", JOptionPane.WARNING_MESSAGE);
             txt_nome_edit.setBackground(Color.cyan);
@@ -218,7 +234,6 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, "Atualizado com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 
             limparCampo();
-            limparRadio();
             pesquisarClienteFisico();
         }
     }
@@ -270,9 +285,9 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
         rb_fisico = new javax.swing.JRadioButton();
         rb_juridico = new javax.swing.JRadioButton();
         txt_cnpj = new javax.swing.JFormattedTextField();
+        jLabel16 = new javax.swing.JLabel();
 
         setIconifiable(true);
-        setMaximizable(true);
         setTitle("Pesquisar e alterar cliente");
         setPreferredSize(new java.awt.Dimension(811, 636));
 
@@ -286,12 +301,17 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "", "", "", ""
             }
         ));
         tbl_clientes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tbl_clientesMouseClicked(evt);
+            }
+        });
+        tbl_clientes.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tbl_clientesKeyReleased(evt);
             }
         });
         jScrollPane1.setViewportView(tbl_clientes);
@@ -304,13 +324,13 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
 
         jLabel1.setText("Código");
 
+        txt_cod_edit.setEditable(false);
         txt_cod_edit.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         txt_cod_edit.setForeground(new java.awt.Color(153, 0, 0));
-        txt_cod_edit.setEnabled(false);
 
-        jLabel2.setText("Nome/Logradouro");
+        jLabel2.setText("Nome/Logradouro *");
 
-        jLabel3.setText("CPF");
+        jLabel3.setText("CPF *");
 
         try {
             txt_cpf_edit.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
@@ -318,7 +338,7 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
             ex.printStackTrace();
         }
 
-        jLabel4.setText("CNPJ");
+        jLabel4.setText("CNPJ *");
 
         jLabel5.setText("Tel. Fixo");
 
@@ -328,7 +348,7 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
             ex.printStackTrace();
         }
 
-        jLabel6.setText("Celular");
+        jLabel6.setText("Celular *");
 
         try {
             txt_cel_edit.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("(##) #####-####")));
@@ -386,20 +406,17 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
 
         jLabel13.setText("Deta de cadastro");
 
+        txt_data_cadastro.setEditable(false);
         txt_data_cadastro.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         txt_data_cadastro.setForeground(new java.awt.Color(204, 0, 0));
-        txt_data_cadastro.setEnabled(false);
 
         jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/scm/icones/lupa.png"))); // NOI18N
 
         jLabel15.setText("Tipo");
 
-        txt_tipo.setEnabled(false);
-        txt_tipo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_tipoActionPerformed(evt);
-            }
-        });
+        txt_tipo.setEditable(false);
+        txt_tipo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        txt_tipo.setForeground(new java.awt.Color(204, 0, 0));
 
         buttonGroup1.add(rb_fisico);
         rb_fisico.setText("Físico");
@@ -423,6 +440,9 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
             ex.printStackTrace();
         }
 
+        jLabel16.setForeground(new java.awt.Color(204, 0, 0));
+        jLabel16.setText("* Campos obrigatórios");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -440,28 +460,6 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
                             .addComponent(jScrollPane1)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(txt_cod_edit, javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addComponent(txt_nome_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(txt_cpf_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addComponent(jLabel2)
-                                                .addGap(223, 223, 223)
-                                                .addComponent(jLabel3)))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel4)
-                                            .addComponent(txt_cnpj, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel15)
-                                            .addComponent(txt_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(txt_fixo_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -514,13 +512,41 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(txt_pesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 534, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel14)))
+                                .addComponent(jLabel14))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(txt_cod_edit, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txt_nome_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3)
+                                    .addComponent(txt_cpf_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel4)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(txt_cnpj))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel15)
+                                    .addComponent(txt_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(49, 49, 49)))
                         .addContainerGap())))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel16)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(11, 11, 11)
+                .addComponent(jLabel16)
+                .addGap(17, 17, 17)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel14)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -574,7 +600,7 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txt_data_cadastro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_sair)
                     .addComponent(btn_canelar_cli)
@@ -618,6 +644,7 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
     private void btn_canelar_cliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_canelar_cliActionPerformed
         limparCampo();
         limparRadio();
+        limparTabela();
 
     }//GEN-LAST:event_btn_canelar_cliActionPerformed
 
@@ -670,7 +697,8 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
         if (rb_fisico.isSelected()) {
             txt_cnpj.setEnabled(false);
             txt_cpf_edit.setEnabled(true);
-            
+            pesquisarClienteFisico();
+            limparCampo();
         }
     }//GEN-LAST:event_rb_fisicoActionPerformed
 
@@ -678,12 +706,14 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
         if (rb_juridico.isSelected()) {
             txt_cpf_edit.setEnabled(false);
             txt_cnpj.setEnabled(true);
+            pesquisarClienteJuridico();
+            limparCampo();
         }
     }//GEN-LAST:event_rb_juridicoActionPerformed
 
-    private void txt_tipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_tipoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_tipoActionPerformed
+    private void tbl_clientesKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tbl_clientesKeyReleased
+        setarCampos();
+    }//GEN-LAST:event_tbl_clientesKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -700,6 +730,7 @@ public class Editar_Clientes extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

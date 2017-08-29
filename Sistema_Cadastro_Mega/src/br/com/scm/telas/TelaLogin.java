@@ -4,6 +4,7 @@ import java.sql.*;
 import br.com.scm.dao.ModuloConexao;
 import java.awt.Color;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 public class TelaLogin extends javax.swing.JFrame {
 
@@ -190,6 +191,17 @@ public class TelaLogin extends javax.swing.JFrame {
 
     public static void main(String args[]) {
 
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            // If Nimbus is not available, you can set the GUI to another look and feel.
+        }
+        
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new TelaLogin().setVisible(true);

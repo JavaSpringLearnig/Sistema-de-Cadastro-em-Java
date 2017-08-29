@@ -16,6 +16,7 @@ public class Editar_Usuarios extends javax.swing.JInternalFrame {
 
     public Editar_Usuarios() {
         initComponents();
+        pesquisarUsuario();
     }
 
     // Método para pesquisar Usuario
@@ -25,7 +26,7 @@ public class Editar_Usuarios extends javax.swing.JInternalFrame {
 
         ResultSet resultado;
 
-        sql.append("SELECT * FROM  tbl_usuario WHERE nome_usuario LIKE ?");
+        sql.append("SELECT id_usuario as Cód, nome_usuario as Nome, login as Login, senha as Senha, tipo as Tipo FROM  tbl_usuario WHERE nome_usuario LIKE ?ORDER BY nome_usuario ");
 
         try {
 
@@ -65,7 +66,7 @@ public class Editar_Usuarios extends javax.swing.JInternalFrame {
         usuario.setSenha(txt_senha.getText());
         usuario.setId_usuario(Long.parseLong(txt_cod.getText()));
 
-        if (txt_nome.getText().equals("") || txt_login.getText().equals("") || txt_senha.getText().equals("")) {
+        if (txt_nome.getText().trim().equals("") || txt_login.getText().trim().equals("") || txt_senha.getText().trim().equals("")) {
 
             JOptionPane.showMessageDialog(null, "OS campos Nome, Login, Senha devem ser preenchidos!", "Alerta", JOptionPane.WARNING_MESSAGE);
 
@@ -139,6 +140,7 @@ public class Editar_Usuarios extends javax.swing.JInternalFrame {
         jLabel6 = new javax.swing.JLabel();
         txt_senha = new javax.swing.JTextField();
 
+        setIconifiable(true);
         setPreferredSize(new java.awt.Dimension(759, 491));
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Lista de Usuários", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
@@ -157,12 +159,17 @@ public class Editar_Usuarios extends javax.swing.JInternalFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "", "", "", ""
             }
         ));
         tbl_usuarios.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tbl_usuariosMouseClicked(evt);
+            }
+        });
+        tbl_usuarios.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tbl_usuariosKeyReleased(evt);
             }
         });
         jScrollPane1.setViewportView(tbl_usuarios);
@@ -313,6 +320,8 @@ public class Editar_Usuarios extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
+        getAccessibleContext().setAccessibleName("Editar Usuários");
+
         setBounds(0, 0, 786, 537);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -342,6 +351,10 @@ public class Editar_Usuarios extends javax.swing.JInternalFrame {
        Usuario usuario = new Usuario();
         excluirUsuario(usuario);
     }//GEN-LAST:event_btn_excluirActionPerformed
+
+    private void tbl_usuariosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tbl_usuariosKeyReleased
+        setarCampos();
+    }//GEN-LAST:event_tbl_usuariosKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

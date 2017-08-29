@@ -209,6 +209,8 @@ public class Cad_Usuario extends javax.swing.JInternalFrame {
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
+        getAccessibleContext().setAccessibleName("Cadastrar Usuaios");
+
         setBounds(0, 0, 519, 361);
     }// </editor-fold>//GEN-END:initComponents
 

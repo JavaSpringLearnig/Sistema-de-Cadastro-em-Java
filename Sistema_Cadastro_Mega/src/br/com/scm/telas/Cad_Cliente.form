@@ -6,9 +6,11 @@
     </Component>
   </NonVisualComponents>
   <Properties>
+    <Property name="iconifiable" type="boolean" value="true"/>
     <Property name="title" type="java.lang.String" value="Cadastro de Clientes"/>
   </Properties>
   <AccessibilityProperties>
+    <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="Cadastrar Clientes"/>
     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
   </AccessibilityProperties>
   <SyntheticProperties>

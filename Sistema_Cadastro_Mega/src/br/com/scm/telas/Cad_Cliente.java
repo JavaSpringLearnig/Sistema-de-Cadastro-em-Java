@@ -147,6 +147,7 @@ public class Cad_Cliente extends javax.swing.JInternalFrame {
         rb_fisica = new javax.swing.JRadioButton();
         rb_juridica = new javax.swing.JRadioButton();
 
+        setIconifiable(true);
         setTitle("Cadastro de Clientes");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Dados do Cliente", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
@@ -424,6 +425,7 @@ public class Cad_Cliente extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
+        getAccessibleContext().setAccessibleName("Cadastrar Clientes");
         getAccessibleContext().setAccessibleDescription("");
 
         pack();

@@ -1,17 +1,25 @@
 package br.com.scm.telas;
 
+import br.com.scm.dao.ModuloConexao;
 import java.awt.Dimension;
+import java.sql.Connection;
 import java.text.DateFormat;
 import java.util.Date;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 
 public class Principal extends javax.swing.JFrame {
+
+    Connection connection = null;
 
     public Principal() {
         initComponents();
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-
+        connection = ModuloConexao.conector();
     }
 
     //método para centralizar a tela no meio do desktopPanel
@@ -41,6 +49,9 @@ public class Principal extends javax.swing.JFrame {
         menuPesquisarClientes = new javax.swing.JMenuItem();
         menuEditarCliente = new javax.swing.JMenuItem();
         menuEditarUsuario = new javax.swing.JMenuItem();
+        menu_relatorio = new javax.swing.JMenu();
+        menRelFisico = new javax.swing.JMenuItem();
+        menRelJuridico = new javax.swing.JMenuItem();
         menu_sobre = new javax.swing.JMenu();
         menuSobre = new javax.swing.JMenuItem();
         menOpSair = new javax.swing.JMenu();
@@ -54,6 +65,7 @@ public class Principal extends javax.swing.JFrame {
                 formWindowActivated(evt);
             }
         });
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         desktopPanel.setBackground(java.awt.Color.lightGray);
         desktopPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -69,23 +81,32 @@ public class Principal extends javax.swing.JFrame {
             .addGap(0, 630, Short.MAX_VALUE)
         );
 
+        getContentPane().add(desktopPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 637));
+
         lbl_data.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lbl_data.setText("Data");
+        getContentPane().add(lbl_data, new org.netbeans.lib.awtextra.AbsoluteConstraints(876, 609, -1, -1));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(821, 103, -1, -1));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/scm/icones/Logo.png"))); // NOI18N
+        jLabel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 200, -1, -1));
 
         lbl_usuario.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lbl_usuario.setText("Usuario");
+        getContentPane().add(lbl_usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(876, 574, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel2.setText("Usuário:");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(821, 576, -1, -1));
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel4.setText("Data:");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(821, 611, -1, -1));
 
         menuCadastro.setText("Cadastrar");
 
-        menu_cad_usuario.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.CTRL_MASK));
+        menu_cad_usuario.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_MASK));
         menu_cad_usuario.setText("Usuário");
         menu_cad_usuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -94,7 +115,7 @@ public class Principal extends javax.swing.JFrame {
         });
         menuCadastro.add(menu_cad_usuario);
 
-        menu_cad_cliente.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        menu_cad_cliente.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK));
         menu_cad_cliente.setText("Cliente");
         menu_cad_cliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -136,12 +157,29 @@ public class Principal extends javax.swing.JFrame {
 
         jMenuBar1.add(menuUtilitario);
 
-        menu_sobre.setText("Sobre");
-        menu_sobre.addActionListener(new java.awt.event.ActionListener() {
+        menu_relatorio.setText("Relatório");
+
+        menRelFisico.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.ALT_MASK));
+        menRelFisico.setText("Clientes Físico");
+        menRelFisico.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menu_sobreActionPerformed(evt);
+                menRelFisicoActionPerformed(evt);
             }
         });
+        menu_relatorio.add(menRelFisico);
+
+        menRelJuridico.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_J, java.awt.event.InputEvent.ALT_MASK));
+        menRelJuridico.setText("Clientes Jurídico");
+        menRelJuridico.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menRelJuridicoActionPerformed(evt);
+            }
+        });
+        menu_relatorio.add(menRelJuridico);
+
+        jMenuBar1.add(menu_relatorio);
+
+        menu_sobre.setText("Sobre");
 
         menuSobre.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
         menuSobre.setText("Sobre o Sistema");
@@ -155,11 +193,6 @@ public class Principal extends javax.swing.JFrame {
         jMenuBar1.add(menu_sobre);
 
         menOpSair.setText("Sair");
-        menOpSair.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menOpSairActionPerformed(evt);
-            }
-        });
 
         menu_sair.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, 0));
         menu_sair.setText("Sair");
@@ -173,45 +206,6 @@ public class Principal extends javax.swing.JFrame {
         jMenuBar1.add(menOpSair);
 
         setJMenuBar(jMenuBar1);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(desktopPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lbl_data)
-                            .addComponent(lbl_usuario)))
-                    .addComponent(jLabel1))
-                .addContainerGap(17, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPanel)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(103, 103, 103)
-                .addComponent(jLabel3)
-                .addGap(92, 92, 92)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 279, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(lbl_usuario))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbl_data)
-                    .addComponent(jLabel4))
-                .addContainerGap())
-        );
 
         getAccessibleContext().setAccessibleDescription("Sistema Mega Celulares");
         getAccessibleContext().setAccessibleParent(this);
@@ -254,11 +248,6 @@ public class Principal extends javax.swing.JFrame {
         desktopPanel.add(frmEditarCliente);
     }//GEN-LAST:event_menuEditarClienteActionPerformed
 
-    private void menOpSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menOpSairActionPerformed
-
-
-    }//GEN-LAST:event_menOpSairActionPerformed
-
     private void menu_sairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_sairActionPerformed
         int sair = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja Sair do sistema?", "Alerta", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
         if (sair == JOptionPane.YES_OPTION) {
@@ -282,11 +271,6 @@ public class Principal extends javax.swing.JFrame {
         desktopPanel.add(frmEditUsuario);
     }//GEN-LAST:event_menuEditarUsuarioActionPerformed
 
-    private void menu_sobreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_sobreActionPerformed
-
-
-    }//GEN-LAST:event_menu_sobreActionPerformed
-
     private void menuSobreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSobreActionPerformed
 
         Sobre frmSobre = new Sobre();
@@ -298,11 +282,49 @@ public class Principal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_menuSobreActionPerformed
 
+    private void menRelJuridicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menRelJuridicoActionPerformed
+
+        int confirma = JOptionPane.showConfirmDialog(null, "Imprimir a Relação de Cliente Jurídco?", "Atenção", JOptionPane.YES_OPTION);
+
+        if (confirma == JOptionPane.YES_OPTION) {
+
+            try {
+                JasperPrint print = JasperFillManager.fillReport("C:/reports/Cliente Juridico.jasper", null, connection);
+                
+                JasperViewer.viewReport(print, false);
+             
+            } catch (JRException erro) {
+                JOptionPane.showMessageDialog(null, erro);
+            }
+              
+        }
+  
+    }//GEN-LAST:event_menRelJuridicoActionPerformed
+
+    private void menRelFisicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menRelFisicoActionPerformed
+        
+           int confirma = JOptionPane.showConfirmDialog(null, "Imprimir a Relação de Cliente Fisíco?", "Atenção", JOptionPane.YES_OPTION);
+
+        if (confirma == JOptionPane.YES_OPTION) {
+
+            try {
+                JasperPrint print = JasperFillManager.fillReport("C:/reports/Cliente Fisico.jasper", null, connection);
+                
+                JasperViewer.viewReport(print, false);
+             
+            } catch (JRException erro) {
+                JOptionPane.showMessageDialog(null, erro);
+            }
+              
+        }
+    }//GEN-LAST:event_menRelFisicoActionPerformed
+
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Principal().setVisible(true);
+
             }
         });
     }
@@ -317,6 +339,8 @@ public class Principal extends javax.swing.JFrame {
     public static javax.swing.JLabel lbl_data;
     public static javax.swing.JLabel lbl_usuario;
     private javax.swing.JMenu menOpSair;
+    private javax.swing.JMenuItem menRelFisico;
+    private javax.swing.JMenuItem menRelJuridico;
     private javax.swing.JMenu menuCadastro;
     public static javax.swing.JMenuItem menuEditarCliente;
     public static javax.swing.JMenuItem menuEditarUsuario;
@@ -325,6 +349,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenu menuUtilitario;
     private javax.swing.JMenuItem menu_cad_cliente;
     public static javax.swing.JMenuItem menu_cad_usuario;
+    private javax.swing.JMenu menu_relatorio;
     private javax.swing.JMenuItem menu_sair;
     private javax.swing.JMenu menu_sobre;
     // End of variables declaration//GEN-END:variables
